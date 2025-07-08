@@ -157,6 +157,8 @@ class EmployeeDetail(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'pk'
 
 
+############################################ View Sets ################################################
+
 
 
 
