@@ -9,6 +9,12 @@ from rest_framework.views import APIView
 from employees.models import Employees
 from django.http import Http404
 from rest_framework import mixins, generics , viewsets
+from blogs.models import Blog, Comment
+from blogs.serializers import BlogSerializer, CommentSerializer
+from .paginations import CustomPagination
+from employees.filters import EmployeeFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
+
 
 # def studentsView(request):
 #     students = {
@@ -157,7 +163,7 @@ def studentDetailView(request, pk):
 #     lookup_field = 'pk'
 
 
-############################################ View Sets ################################################
+############################################ View Sets with Pagination and Filter ################################################
 
 # class EmployeeViewSet(viewsets.ViewSet):
 #     def list(self, request):
@@ -192,3 +198,30 @@ def studentDetailView(request, pk):
 class EmployeeViewSet(viewsets.ModelViewSet):
     queryset = Employees.objects.all()
     serializer_class = EmployeeSerializer
+    pagination_class = CustomPagination
+    filterset_class = EmployeeFilter
+
+
+
+############################ nested Serializer & search ########################################
+
+class BlogView(generics.ListCreateAPIView):
+    queryset = Blog.objects.all()
+    serializer_class = BlogSerializer 
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['blog_title']   #if i provide ^ -> carret symbol in front of like ^blog_title so it will search tiltle where the searching words starts 
+    ordering_fields = ['id', 'blog_title']  # filter data by ascending and descending
+
+class CommentView(generics.ListCreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+class BlogDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Blog.objects.all()
+    serializer_class = BlogSerializer
+    lookup_field = 'pk'
+
+class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    lookup_field = 'pk'
